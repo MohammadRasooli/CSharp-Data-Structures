@@ -2,25 +2,17 @@
 // It can be visualized as a single wagon in a train.
 public class Node
 {
-
     // Gets or sets the value stored in the node.
-
     public int Data { get; set; }
 
-
     // Gets or sets the reference to the next node in the sequence.
-
     public Node Next { get; set; }
-
 
     // Gets or sets the reference to the previous node in the sequence.
     // Used in Doubly Linked Lists.
-
     public Node Previous { get; set; }
 
-
     // Initializes a new instance of the Node class with the specified data.
-
     public Node(int data)
     {
         Data = data;
@@ -33,17 +25,14 @@ public class Node
 // Each node points only to the next node in the sequence.
 public class SinglyLinkedList
 {
-
     // Gets the first node (the head) of the list.
     public Node Head { get; private set; }
-
 
     // Gets the last node (the tail) of the list.
     // A direct reference to the tail allows for O(1) add operations.
     public Node Tail { get; private set; }
 
-
-    // Adds a new node with the specified value to the end of the list.
+    // Adds a new node with the specified value to the end of the list. This is an O(1) operation.
     public void AddLast(int data)
     {
         var newNode = new Node(data);
@@ -62,7 +51,7 @@ public class SinglyLinkedList
         Tail = newNode;
     }
 
-    // Adds a new node with the specified value to the beginning of the list.
+    // Adds a new node with the specified value to the beginning of the list.  This is an O(1) operation.
     public void AddFirst(int data)
     {
         // Create a new node with the given data.
@@ -109,13 +98,13 @@ public class SinglyLinkedList
         Tail = current;
     }
 
-    // Removes the first node from the list.
+    // Removes the first node from the list. This is an O(1) operation.
     public void RemoveFirst()
     {
         // If the list is empty, there's nothing to do.
         if (Head == null) return;
 
-        // If there is only one node, clear the list.
+        // If there is only one node in the list, set both Head and Tail to null.
         if (Head == Tail)
         {
             Head = null;
@@ -123,13 +112,14 @@ public class SinglyLinkedList
             return;
         }
 
-        // Move the Head pointer to the second node, effectively removing the first.
+        // Move the Head pointer to the second node.
         Head = Head.Next;
     }
 
     // Removes the first occurrence of a node with the specified value.
     public void Remove(int data)
     {
+        // If the list is empty, do nothing.
         if (Head == null) return;
 
         // If the node to remove is the head, use the dedicated method and exit.
@@ -198,17 +188,14 @@ public class SinglyLinkedList
 // Each node points to both the next and the previous node.
 public class DoublyLinkedList
 {
-
     // Gets the first node (the head) of the list.
     public Node Head { get; private set; }
-
 
     // Gets the last node (the tail) of the list.
     // A direct reference to the tail allows for O(1) add operations.
     public Node Tail { get; private set; }
 
-
-    // Adds a new node with the specified value to the end of the list.
+    // Adds a new node with the specified value to the end of the list. This is an O(1) operation.
     public void AddLast(int data)
     {
         var newNode = new Node(data);
@@ -230,6 +217,133 @@ public class DoublyLinkedList
         Tail = newNode;
     }
 
+    // Adds a new node with the specified value to the beginning of the list.  This is an O(1) operation.
+    public void AddFirst(int data)
+    {
+        // Create a new node with the given data.
+        var newNode = new Node(data);
+
+        // If the list is empty, the new node becomes both the head and the tail.
+        if (Head == null)
+        {
+            Head = newNode;
+            Tail = newNode;
+            return;
+        }
+
+        // Link the current head's Previous pointer back to the new node.
+        Head.Previous = newNode;
+        // Point the new node's Next reference to the current head.
+        newNode.Next = Head;
+        // Update the list's Head to be the new node.
+        Head = newNode;
+    }
+
+    // Removes the last node from the list. This is an O(1) operation.
+    public void RemoveLast()
+    {
+        // If the list is empty, there's nothing to do.
+        if (Head == null) return;
+
+        // If there is only one node in the list, set both Head and Tail to null.
+        if (Head == Tail)
+        {
+            Head = null;
+            Tail = null;
+            return;
+        }
+
+        // Move the tail pointer to the second-to-last node.
+        Tail = Tail.Previous;
+        // Sever the link from the new tail to the old tail.
+        Tail.Next = null;
+    }
+
+    // Removes the first node from the list. This is an O(1) operation.
+    public void RemoveFirst()
+    {
+        // If the list is empty, there's nothing to do.
+        if (Head == null) return;
+
+        // If there is only one node in the list, set both Head and Tail to null.
+        if (Head == Tail)
+        {
+            Head = null;
+            Tail = null;
+            return;
+        }
+
+        // Move the head pointer to the second node.
+        Head = Head.Next;
+        // Sever the link from the new head back to the old head.
+        Head.Previous = null;
+    }
+
+    // Removes the first occurrence of a node with the specified value.
+    public void Remove(int data)
+    {
+        // If the list is empty, do nothing.
+        if (Head == null) return;
+
+        // Traverse the list to find the actual node to be removed.
+        var current = Head;
+        while (current != null && current.Data != data)
+        {
+            current = current.Next;
+        }
+
+        // If the node was not found after traversing the whole list, exit.
+        if (current == null)
+        {
+            return;
+        }
+
+        // If the node to remove is not the head of the list...
+        if (current.Previous != null)
+        {
+            // ...link its previous node to its next node, bypassing it.
+            current.Previous.Next = current.Next;
+        }
+        else
+        {   // ...otherwise, the node to remove is the Head. Update the Head pointer.
+            Head = current.Next;
+        }
+
+        // If the node to remove is not the tail of the list...
+        if (current.Next != null)
+        {
+            // ...link its next node back to its previous node.
+            current.Next.Previous = current.Previous;
+        }
+        else
+        {
+            // ...otherwise, the node to remove is the Tail. Update the Tail pointer.
+            Tail = current.Previous;
+        }
+
+    }
+
+    // Finds the first node that contains the specified value.
+    public Node Find(int data)
+    {
+        // Start traversing from the head.
+        var current = Head;
+
+        // Loop until the end of the list is reached.
+        while (current != null)
+        {
+            // If the current node's data matches, we've found it.
+            if (current.Data == data)
+            {
+                // Return the found node immediately.
+                return current;
+            }
+            // Move to the next node in the list.
+            current = current.Next;
+        }
+        // If the loop completes, the value was not in the list, so return null.
+        return null;
+    }
 
     // Prints all elements of the list in forward order (from head to tail).
     public void PrintForward()
@@ -243,7 +357,6 @@ public class DoublyLinkedList
         }
         Console.WriteLine("null");
     }
-
 
     // Prints all elements of the list in reverse order (from tail to head).
     public void PrintBackward()
@@ -263,14 +376,11 @@ public class DoublyLinkedList
 // The last node's 'Next' pointer points back to the head node.
 public class CircularLinkedList
 {
-
     // Gets the head node of the list. In a circular list, this is an arbitrary entry point.
     public Node Head { get; private set; }
 
-
     // Gets the last node of the list. Its 'Next' property points back to the Head.
     public Node Tail { get; private set; }
-
 
     // Adds a new node with the specified value to the end of the list.
     public void AddLast(int data)
@@ -295,7 +405,6 @@ public class CircularLinkedList
         // Update the Tail to be the new last node.
         Tail = newNode;
     }
-
 
     // Prints all elements of the circular list, starting from the head.
     public void PrintList()
@@ -323,14 +432,11 @@ public class CircularLinkedList
 // It combines the features of a doubly linked list and a circular list.
 public class DoublyCircularLinkedList
 {
-
     // Gets the head node of the list. This is an arbitrary entry point.
     public Node Head { get; private set; }
 
-
     // Gets the last node of the list. Its 'Next' points to the Head and the Head's 'Previous' points to it.
     public Node Tail { get; private set; }
-
 
     // Adds a new node with the specified value to the end of the list.
     public void AddLast(int data)
@@ -361,7 +467,6 @@ public class DoublyCircularLinkedList
         Head.Previous = Tail;
     }
 
-
     // Prints all elements in forward order, starting from the head and traversing the circle once.
     public void PrintForward()
     {
@@ -382,7 +487,6 @@ public class DoublyCircularLinkedList
         // Shows the final link from the tail back to the head.
         Console.WriteLine($"(Back To Head: {current.Data})");
     }
-
 
     // Prints all elements in reverse order, starting from the tail and traversing the circle once.
     public void PrintBackward()
@@ -454,39 +558,97 @@ public class Program
         // Step 6: Demonstrate Find
         Console.WriteLine("Step 6: Finding nodes in the list");
         Console.WriteLine("Searching for node with value 10...");
-        Node foundNode = singlyTrain.Find(10);
-        if (foundNode != null)
+        var foundNodeSingly = singlyTrain.Find(10);
+        if (foundNodeSingly != null)
         {
-            Console.WriteLine($"   -> Found node! Its data is {foundNode.Data}. The next node's data is {foundNode.Next.Data}.");
+            var nextData = foundNodeSingly.Next != null ? foundNodeSingly.Next.Data.ToString() : "null";
+            Console.WriteLine($"   -> Found node! Its data is {foundNodeSingly.Data}. The next node's data is {nextData}.");
         }
 
         Console.WriteLine("Searching for node with value 99...");
-        Node notFoundNode = singlyTrain.Find(99);
-        if (notFoundNode == null)
+        var notFoundNodeSingly = singlyTrain.Find(99);
+        if (notFoundNodeSingly == null)
         {
             Console.WriteLine("   -> Node with data 99 was not found, as expected.");
         }
 
 
         // --- Doubly Linked List Demonstration ---
-        Console.WriteLine("\n\n--- Doubly Linked List ---");
+        Console.WriteLine("\n\n--- Doubly Linked List Demonstration ---");
         var doublyTrain = new DoublyLinkedList();
+
+        // Step 1: Populate the list using AddLast
+        Console.WriteLine("Step 1: Populating with AddLast(10), AddLast(20), AddLast(30)");
         doublyTrain.AddLast(10);
         doublyTrain.AddLast(20);
         doublyTrain.AddLast(30);
+        doublyTrain.PrintForward();  // Expected: Forward:  10 <-> 20 <-> 30 <-> null
+        doublyTrain.PrintBackward(); // Expected: Backward: 30 <-> 20 <-> 10 <-> null
+        Console.WriteLine();
+
+        // Step 2: Demonstrate AddFirst
+        Console.WriteLine("Step 2: Adding a new head with AddFirst(5)");
+        doublyTrain.AddFirst(5);
+        doublyTrain.PrintForward();  // Expected: Forward:  5 <-> 10 <-> 20 <-> 30 <-> null
+        doublyTrain.PrintBackward(); // Expected: Backward: 30 <-> 20 <-> 10 <-> 5 <-> null
+        Console.WriteLine();
+
+        // Step 3: Demonstrate RemoveFirst
+        Console.WriteLine("Step 3: Removing the head with RemoveFirst()");
+        doublyTrain.RemoveFirst();
+        doublyTrain.PrintForward();  // Expected: Forward:  10 <-> 20 <-> 30 <-> null
+        doublyTrain.PrintBackward(); // Expected: Backward: 30 <-> 20 <-> 10 <-> null
+        Console.WriteLine();
+
+        // Step 4: Demonstrate RemoveLast
+        Console.WriteLine("Step 4: Removing the tail with RemoveLast()");
+        doublyTrain.RemoveLast();
+        doublyTrain.PrintForward();  // Expected: Forward:  10 <-> 20 <-> null
+        doublyTrain.PrintBackward(); // Expected: Backward: 20 <-> 10 <-> null
+        Console.WriteLine();
+
+        // Step 5: Demonstrate remove (a node in the middle)
+        Console.WriteLine("Step 5: Removing a specific node with remove(20)");
+        doublyTrain.AddFirst(5);   // List is now 5 <-> 10 <-> 20
+        doublyTrain.AddLast(30);  // List is now 5 <-> 10 <-> 20 <-> 30
+        Console.WriteLine("List before removing 20:");
         doublyTrain.PrintForward();
-        doublyTrain.PrintBackward();
+        doublyTrain.Remove(20);
+        Console.WriteLine("List after removing 20:");
+        doublyTrain.PrintForward();  // Expected: Forward:  5 <-> 10 <-> 30 <-> null
+        doublyTrain.PrintBackward(); // Expected: Backward: 30 <-> 10 <-> 5 <-> null
+        Console.WriteLine();
+
+        // Step 6: Demonstrate Find
+        Console.WriteLine("Step 6: Finding nodes in the list");
+        Console.WriteLine("Searching for node with value 10...");
+        var foundNodeDoubly = doublyTrain.Find(10);
+        if (foundNodeDoubly != null)
+        {
+            var prevData = foundNodeDoubly.Previous != null ? foundNodeDoubly.Previous.Data.ToString() : "null";
+            var nextData = foundNodeDoubly.Next != null ? foundNodeDoubly.Next.Data.ToString() : "null";
+            Console.WriteLine($"   -> Found node! Its data is {foundNodeDoubly.Data}. Previous is {prevData}, Next is {nextData}.");
+        }
+
+        Console.WriteLine("Searching for node with value 99...");
+        var notFoundNodeDoubly = doublyTrain.Find(99);
+        if (notFoundNodeDoubly == null)
+        {
+            Console.WriteLine("   -> Node with data 99 was not found, as expected.");
+        }
+
 
         // --- Circular Linked List Demonstration ---
-        Console.WriteLine("\n--- Circular Linked List ---");
+        Console.WriteLine("\n\n--- Circular Linked List ---");
         var circularTrain = new CircularLinkedList();
         circularTrain.AddLast(10);
         circularTrain.AddLast(20);
         circularTrain.AddLast(30);
         circularTrain.PrintList();
 
+
         // --- Doubly Circular Linked List Demonstration ---
-        Console.WriteLine("\n--- Doubly Circular Linked List ---");
+        Console.WriteLine("\n\n--- Doubly Circular Linked List ---");
         var doublyCircularTrain = new DoublyCircularLinkedList();
         doublyCircularTrain.AddLast(10);
         doublyCircularTrain.AddLast(20);
