@@ -116,6 +116,27 @@ public class SinglyLinkedList
         Head = Head.Next;
     }
 
+    // Finds the first node that contains the specified value.
+    public Node Find(int data)
+    {
+        // Start traversing from the head.
+        var current = Head;
+        // Loop until the end of the list is reached.
+        while (current != null)
+        {
+            // If the current node's data matches, we've found it.
+            if (current.Data == data)
+            {
+                // Return the found node immediately.
+                return current;
+            }
+            // Move to the next node in the list.
+            current = current.Next;
+        }
+        // If the loop completes, the value was not in the list, so return null.
+        return null;
+    }
+
     // Removes the first occurrence of a node with the specified value.
     public void Remove(int data)
     {
@@ -147,27 +168,6 @@ public class SinglyLinkedList
             // Bypass the target node by linking the current node to the node after the target.
             current.Next = current.Next.Next;
         }
-    }
-
-    // Finds the first node that contains the specified value.
-    public Node Find(int data)
-    {
-        // Start traversing from the head.
-        var current = Head;
-        // Loop until the end of the list is reached.
-        while (current != null)
-        {
-            // If the current node's data matches, we've found it.
-            if (current.Data == data)
-            {
-                // Return the found node immediately.
-                return current;
-            }
-            // Move to the next node in the list.
-            current = current.Next;
-        }
-        // If the loop completes, the value was not in the list, so return null.
-        return null;
     }
 
     // Prints all the elements of the linked list to the console.
@@ -279,50 +279,6 @@ public class DoublyLinkedList
         Head.Previous = null;
     }
 
-    // Removes the first occurrence of a node with the specified value.
-    public void Remove(int data)
-    {
-        // If the list is empty, do nothing.
-        if (Head == null) return;
-
-        // Traverse the list to find the actual node to be removed.
-        var current = Head;
-        while (current != null && current.Data != data)
-        {
-            current = current.Next;
-        }
-
-        // If the node was not found after traversing the whole list, exit.
-        if (current == null)
-        {
-            return;
-        }
-
-        // If the node to remove is not the head of the list...
-        if (current.Previous != null)
-        {
-            // ...link its previous node to its next node, bypassing it.
-            current.Previous.Next = current.Next;
-        }
-        else
-        {   // ...otherwise, the node to remove is the Head. Update the Head pointer.
-            Head = current.Next;
-        }
-
-        // If the node to remove is not the tail of the list...
-        if (current.Next != null)
-        {
-            // ...link its next node back to its previous node.
-            current.Next.Previous = current.Previous;
-        }
-        else
-        {
-            // ...otherwise, the node to remove is the Tail. Update the Tail pointer.
-            Tail = current.Previous;
-        }
-
-    }
-
     // Finds the first node that contains the specified value.
     public Node Find(int data)
     {
@@ -343,6 +299,36 @@ public class DoublyLinkedList
         }
         // If the loop completes, the value was not in the list, so return null.
         return null;
+    }
+
+    // Removes the first occurrence of a node with the specified value.
+    public void Remove(int data)
+    {
+        // Find the node to be removed using the helper method.
+        var nodToRemove = Find(data);
+
+        // If the node doesn't exist in the list, exit the method.
+        if (nodToRemove == null) return;
+
+        // If the node is the Head, call the specific method for removing the first element.
+        if (nodToRemove == Head)
+        {
+            RemoveFirst();
+            return;
+        }
+
+        // If the node is the Tail, call the specific method for removing the last element.
+        if (nodToRemove == Tail)
+        {
+            RemoveLast();
+            return;
+        }
+
+        // If the node is in the middle, bypass it by connecting its previous and next nodes.
+        // The 'Next' of the previous node should point to the 'Next' of the current node.
+        nodToRemove.Previous.Next = nodToRemove.Next;
+        // The 'Previous' of the next node should point to the 'Previous' of the current node.
+        nodToRemove.Next.Previous = nodToRemove.Previous;
     }
 
     // Prints all elements of the list in forward order (from head to tail).
@@ -477,6 +463,30 @@ public class CircularLinkedList
         Head = Head.Next;
     }
 
+    // Finds the first node that contains the specified value.
+    public Node Find(int data)
+    {
+        // If the list is empty, return null as nothing can be found.
+        if (Head == null) return null;
+
+        // Start traversing from the head.
+        var current = Head;
+        do
+        {
+            // If the current node's data matches, we've found it.
+            if (current.Data == data)
+            {
+                // Return the found node immediately.
+                return current;
+            }
+            // Move to the next node in the list.
+            current = current.Next;
+        } while (current != Head); // Continue until we've circled back to the head.
+
+        // If the loop completes, the value was not in the list, so return null.
+        return null;
+    }
+
     // Removes the first occurrence of a node with the specified value.
     public void Remove(int data)
     {
@@ -522,30 +532,6 @@ public class CircularLinkedList
         }
     }
 
-    // Finds the first node that contains the specified value.
-    public Node Find(int data)
-    {
-        // If the list is empty, return null as nothing can be found.
-        if (Head == null) return null;
-
-        // Start traversing from the head.
-        var current = Head;
-        do
-        {
-            // If the current node's data matches, we've found it.
-            if (current.Data == data)
-            {
-                // Return the found node immediately.
-                return current;
-            }
-            // Move to the next node in the list.
-            current = current.Next;
-        } while (current != Head); // Continue until we've circled back to the head.
-
-        // If the loop completes, the value was not in the list, so return null.
-        return null;
-    }
-
     // Prints all elements of the circular list, starting from the head.
     public void PrintList()
     {
@@ -578,7 +564,7 @@ public class DoublyCircularLinkedList
     // Gets the last node of the list. Its 'Next' points to the Head and the Head's 'Previous' points to it.
     public Node Tail { get; private set; }
 
-    // Adds a new node with the specified value to the end of the list.
+    // Adds a new node with the specified value to the end of the list. This is an O(1) operation.
     public void AddLast(int data)
     {
         var newNode = new Node(data);
@@ -605,6 +591,134 @@ public class DoublyCircularLinkedList
         // Close the circle by linking the new Tail and the Head in both directions.
         Tail.Next = Head;
         Head.Previous = Tail;
+    }
+
+    // Adds a new node with the specified value to the beginning of the list. This is an O(1) operation.
+    public void AddFirst(int data)
+    {
+        // Create the new node to be added.
+        var newNode = new Node(data);
+
+        // If the list is empty, the new node is both the head and the tail.
+        if (Head == null)
+        {
+            Head = newNode;
+            Tail = newNode;
+            // The single node must point to itself to form the circle.
+            Head.Previous = Tail;
+            Tail.Next = Head;
+            return;
+        }
+
+        // Link the new node to its future neighbors (the current Head and Tail).
+        newNode.Next = Head;
+        newNode.Previous = Tail;
+
+        // Update the old neighbors to point to the new node, closing the circle.
+        Head.Previous = newNode;
+        Tail.Next = newNode;
+
+        // Update the Head of the list to be the new node.
+        Head = newNode;
+    }
+
+    // Removes the last node from the list. This is an O(1) operation.
+    public void RemoveLast()
+    {
+        // If the list is empty, there is nothing to remove.
+        if (Head == null) return;
+
+        // If there's only one node, clear the list.
+        if (Head == Tail)
+        {
+            Head = null;
+            Tail = null;
+            return;
+        }
+
+        // The node before the tail should now point to the head.
+        Tail.Previous.Next = Head; // Or Tail.Next, which is the same.
+        // The head's previous pointer should point to the new tail.
+        Head.Previous = Tail.Previous;
+        // Update the Tail to be the node that was previously before it.
+        Tail = Tail.Previous;
+    }
+
+    // Removes the first node from the list. This is an O(1) operation.
+    public void RemoveFirst()
+    {
+        // If the list is empty, do nothing.
+        if (Head == null) return;
+
+        // If there is only one node, clear the list.
+        if (Head == Tail)
+        {
+            Head = null;
+            Tail = null;
+            return;
+        }
+
+        // The tail's next pointer must now point to the new head.
+        Tail.Next = Head.Next;
+        // The new head's previous pointer must now point to the tail.
+        Head.Next.Previous = Tail;
+        // Update the Head to be the next node in the sequence.
+        Head = Head.Next;
+    }
+
+    // Finds the first node that contains the specified value.
+    public Node Find(int data)
+    {
+        // If the list is empty, the node cannot be found.
+        if (Head == null) return null;
+
+        // Start the search from the head of the list.
+        var current = Head;
+        // Use a do-while loop to ensure the head node is checked at least once.
+        do
+        {
+            // If the current node's data matches the target data, return the node.
+            if (current.Data == data)
+            {
+                return current;
+            }
+            // Move to the next node in the circle.
+            current = current.Next;
+        } while (current != Head); // Stop when we've looped back to the head.
+
+        // If the loop completes, the node was not found.
+        return null;
+    }
+
+    // Removes the first occurrence of a node with the specified value.
+    public void Remove(int data)
+    {
+        // If the list is empty, there is nothing to remove.
+        if (Head == null) return;
+
+        // Use the Find method to locate the node that needs to be removed.
+        var nodToRemove = Find(data);
+
+        // If Find returns null, the node isn't in the list, so we can exit.
+        if (nodToRemove == null) return;
+
+        // If the node to remove is the head, delegate to the specialized RemoveFirst method.
+        if (nodToRemove == Head)
+        {
+            RemoveFirst();
+            return;
+        }
+
+        // If the node to remove is the tail, delegate to the specialized RemoveLast method.
+        if (nodToRemove == Tail)
+        {
+            RemoveLast();
+            return;
+        }
+
+        // For a middle node, bypass it by connecting its previous and next nodes.
+        nodToRemove.Previous.Next = nodToRemove.Next;
+        nodToRemove.Next.Previous = nodToRemove.Previous;
     }
 
     // Prints all elements in forward order, starting from the head and traversing the circle once.
@@ -838,12 +952,72 @@ public class Program
 
 
         // --- Doubly Circular Linked List Demonstration ---
-        Console.WriteLine("\n\n--- Doubly Circular Linked List ---");
+        Console.WriteLine("\n\n--- Doubly Circular Linked List Demonstration ---");
         var doublyCircularTrain = new DoublyCircularLinkedList();
+
+        // Step 1: Populate the list using AddLast
+        Console.WriteLine("Step 1: Populating with AddLast(10), AddLast(20), AddLast(30)");
         doublyCircularTrain.AddLast(10);
         doublyCircularTrain.AddLast(20);
         doublyCircularTrain.AddLast(30);
+        // Print forwards to show the links from Head to Tail.
+        doublyCircularTrain.PrintForward(); // Expected: Forward Traversal : 10 <-> 20 <-> 30 <-> (Back To Head: 10)
+        // Print backwards to show the links from Tail to Head.
+        doublyCircularTrain.PrintBackward(); // Expected: Backward Traversal: 30 <-> 20 <-> 10 <-> (Back To Tail: 30)
+        Console.WriteLine();
+
+        // Step 2: Demonstrate AddFirst
+        Console.WriteLine("Step 2: Adding a new head with AddFirst(5)");
+        doublyCircularTrain.AddFirst(5);
+        doublyCircularTrain.PrintForward(); // Expected: Forward Traversal : 5 <-> 10 <-> 20 <-> 30 <-> (Back To Head: 5)
+        doublyCircularTrain.PrintBackward(); // Expected: Backward Traversal: 30 <-> 20 <-> 10 <-> 5 <-> (Back To Tail: 30)
+        Console.WriteLine();
+
+        // Step 3: Demonstrate RemoveFirst
+        Console.WriteLine("Step 3: Removing the head with RemoveFirst()");
+        doublyCircularTrain.RemoveFirst();
+        doublyCircularTrain.PrintForward(); // Expected: Forward Traversal : 10 <-> 20 <-> 30 <-> (Back To Head: 10)
+        doublyCircularTrain.PrintBackward(); // Expected: Backward Traversal: 30 <-> 20 <-> 10 <-> (Back To Tail: 30)
+        Console.WriteLine();
+
+        // Step 4: Demonstrate RemoveLast
+        Console.WriteLine("Step 4: Removing the tail with RemoveLast()");
+        doublyCircularTrain.RemoveLast();
+        doublyCircularTrain.PrintForward(); // Expected: Forward Traversal : 10 <-> 20 <-> (Back To Head: 10)
+        doublyCircularTrain.PrintBackward(); // Expected: Backward Traversal: 20 <-> 10 <-> (Back To Tail: 20)
+        Console.WriteLine();
+
+        // Step 5: Demonstrate Remove (a node in the middle)
+        Console.WriteLine("Step 5: Removing a specific node with Remove(20)");
+        // Reset the list to a known state to test middle removal.
+        doublyCircularTrain.AddFirst(5);  // List is now 5 <-> 10 <-> 20
+        doublyCircularTrain.AddLast(30); // List is now 5 <-> 10 <-> 20 <-> 30
+        Console.WriteLine("List before removing 20:");
         doublyCircularTrain.PrintForward();
-        doublyCircularTrain.PrintBackward();
+        // Remove the middle node.
+        doublyCircularTrain.Remove(20);
+        Console.WriteLine("List after removing 20:");
+        doublyCircularTrain.PrintForward(); // Expected: Forward Traversal : 5 <-> 10 <-> 30 <-> (Back To Head: 5)
+        doublyCircularTrain.PrintBackward(); // Expected: Backward Traversal: 30 <-> 10 <-> 5 <-> (Back To Tail: 30)
+        Console.WriteLine();
+
+        // Step 6: Demonstrate Find
+        Console.WriteLine("Step 6: Finding nodes in the list");
+        Console.WriteLine("Searching for node with value 10...");
+        // Search for a node that exists.
+        var foundNodeDoublyCircular = doublyCircularTrain.Find(10);
+        if (foundNodeDoublyCircular != null)
+        {
+            // Because it's a circular list, Previous and Next will never be null.
+            Console.WriteLine($"   -> Found node! Its data is {foundNodeDoublyCircular.Data}. Previous is {foundNodeDoublyCircular.Previous.Data}, Next is {foundNodeDoublyCircular.Next.Data}.");
+        }
+
+        Console.WriteLine("Searching for node with value 99...");
+        // Search for a node that does not exist.
+        var notFoundNodeDoublyCircular = doublyCircularTrain.Find(99);
+        if (notFoundNodeDoublyCircular == null)
+        {
+            Console.WriteLine("   -> Node with data 99 was not found, as expected.");
+        }
     }
 }
